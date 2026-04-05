@@ -9,6 +9,7 @@ jobs:
   build:
     runs-on: macos-latest
     timeout-minutes: 60
+    # УБРАЛ требование secrets - для бесплатных Apple ID
 
     steps:
       - name: Checkout code
@@ -57,26 +58,11 @@ jobs:
           xcodebuild -project ClaudeMobile.xcodeproj -list
 
       - name: Build archive
-        env:
-          TEAM_ID: ${{ secrets.TEAM_ID }}
-          CODE_SIGN_IDENTITY: ${{ secrets.CODE_SIGN_IDENTITY }}
-          PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE }}
+        # УБРАЛ environment variables - используем unsigned build
         run: |
           cd iOS
 
-          # Создаем архив
-          xcodebuild \
-            -project ClaudeMobile.xcodeproj \
-            -scheme ClaudeMobile \
-            -archivePath build/ClaudeMobile.xcarchive \
-            -configuration Release \
-            archive \
-            CODE_SIGN_IDENTITY="iPhone Developer" \
-            CODE_SIGN_STYLE=Automatic \
-            DEVELOPMENT_TEAM="${{ secrets.TEAM_ID }}" \
-            || echo "First try failed, trying alternative..."
-
-          # Альтернативный вариант без подписи (для сидлоадинга)
+          # Alternative: Unsigned build (для бесплатных аккаунтов и AltStore)
           xcodebuild \
             -project ClaudeMobile.xcodeproj \
             -scheme ClaudeMobile \
@@ -106,6 +92,14 @@ jobs:
           name: ClaudeMobile-unsigned
           path: ClaudeMobile_unsigned.ipa
           retention-days: 7
+
+      - name: Success message
+        run: |
+          echo "✅ Процесс сборки успешно завершен!"
+          echo "📝 Следующие шаги:"
+          echo "1. Скачайте IPA файл из Artifacts (надпись сверху)"
+          echo "2. Установите через AltStore (https://altstore.io)"
+          echo "3. Доверьте разработчика в Settings → General → Device Management"
 
       - name: Upload build logs
         uses: actions/upload-artifact@v3

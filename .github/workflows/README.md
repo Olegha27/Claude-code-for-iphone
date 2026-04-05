@@ -61,13 +61,17 @@ xcodebuild -exportArchive \
   -exportOptionsPlist export.plist
 ```
 
-## 📋 Secrets (GitHub Settings → Secrets)
+## 📋 Для бесплатных Apple ID (не нужны Secrets!)
 
-| Secret | Описание | Где взять |
-|--------|----------|-----------|
-| `TEAM_ID` | Apple Team ID | https://developer.apple.com/account |
-| `APPLE_USERNAME` | Apple ID email | Ваш email |
-| `APPLE_PASSWORD` | App-specific password | https://appleid.apple.com/ (создайте пароль приложения) |
+Если у вас **бесплатный Apple ID** (не платный Developer аккаунт), вам **НЕ НУЖНО** ничего добавлять в Secrets!
+
+Workflow автоматически создаст **unsigned IPA**, который вы сможете установить через **AltStore** или **Sideloadly**.
+
+### ✅ Что делать:
+1. Пушьте код на GitHub
+2. Запустите workflow в Actions
+3. Скачайте unsigned IPA
+4. Установите через AltStore
 
 ## ⚠️ Важные моменты
 
