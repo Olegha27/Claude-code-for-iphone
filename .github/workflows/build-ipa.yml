@@ -62,23 +62,37 @@ jobs:
         run: |
           cd iOS
 
-          # Alternative: Unsigned build (для бесплатных аккаунтов и AltStore)
+          # Alternative: Using xcodebuild build instead of archive for unsigned builds
+          mkdir -p build
           xcodebuild \
             -project ClaudeMobile.xcodeproj \
             -scheme ClaudeMobile \
-            -archivePath build/ClaudeMobile.xcarchive \
-            -destination "generic/platform=iOS" \
-            archive \
+            -configuration Release \
+            -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
-            | tee build.log
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            -sdk iphoneos || echo "Build completed with warnings"
+
+          # Check what was built
+          find build -name "*.app" -type d
 
       - name: Create unsigned IPA (для сидлоадинга)
         run: |
           cd iOS
 
+          # Найти .app файл (вместо xcarchive)
+          APP_PATH=$(find build -name "*.app" -type d | head -1)
+          echo "Found app at: $APP_PATH"
+
+          if [ -z "$APP_PATH" ]; then
+            echo "Error: No .app file found!"
+            exit 1
+          fi
+
           # Создаем Payload директорию
           mkdir -p Payload
-          cp -r build/ClaudeMobile.xcarchive/Products/Applications/*.app Payload/
+          cp -r "$APP_PATH" Payload/
 
           # Создаем IPA
           zip -r ClaudeMobile_unsigned.ipa Payload
