@@ -120,7 +120,7 @@ class ConnectionManager:
 # Authentication
 API_KEY = os.getenv("MOBILE_API_KEY", "change_this_token_in_env")
 
-async def verify_token(authorization: str = Header(None):
+async def verify_token(authorization: str = Header(None)):
     """Verify API key from Authorization header"""
     if not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid authorization header")
