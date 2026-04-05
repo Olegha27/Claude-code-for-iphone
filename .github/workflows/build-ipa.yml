@@ -77,6 +77,16 @@ jobs:
           # Check what was built
           find build -name "*.app" -type d
 
+      - name: Verify build output
+        run: |
+          cd iOS
+          echo "=== Build directory structure ==="
+          find build -type d -name "*.app" | head -10
+          echo "=== Contents of build directory ==="
+          ls -R build | head -50
+          echo "=== Looking for executable ==="
+          find build -name "ClaudeMobile" -type f 2>/dev/null || echo "No ClaudeMobile executable found"
+
       - name: Create unsigned IPA (для сидлоадинга)
         run: |
           cd iOS
@@ -89,6 +99,12 @@ jobs:
             echo "Error: No .app file found!"
             exit 1
           fi
+
+          # Проверяем содержимое .app пакета
+          echo "=== Contents of .app bundle ==="
+          ls -la "$APP_PATH"
+          echo "=== Looking for executable ==="
+          find "$APP_PATH" -name "ClaudeMobile" -type f || echo "No executable found!"
 
           # Создаем Payload директорию
           mkdir -p Payload
