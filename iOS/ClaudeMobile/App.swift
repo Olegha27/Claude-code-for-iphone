@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 @main
 struct ClaudeMobileApp: App {
@@ -65,3 +66,13 @@ class AppSettings: ObservableObject {
         UserDefaults.standard.set(isDarkMode, forKey: "isDarkMode")
     }
 }
+
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+func hideKeyboard() {
+    UIApplication.shared.endEditing()
+}
+

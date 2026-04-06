@@ -1,5 +1,6 @@
 import SwiftUI
 import Network
+import UIKit
 
 struct SettingsView: View {
     @EnvironmentObject var settings: AppSettings
@@ -13,13 +14,29 @@ struct SettingsView: View {
         Form {
             // Connection Settings
             Section(header: Text("Server Configuration")) {
-                TextField("Server URL", text: $settings.serverURL)
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
-                    .keyboardType(.URL)
+                HStack {
+                    TextField("Server URL", text: $settings.serverURL)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                        .keyboardType(.URL)
 
-                SecureField("Auth Token", text: $settings.authToken)
-                    .autocapitalization(.none)
+                    Button("Paste") {
+                        if let value = UIPasteboard.general.string, !value.isEmpty {
+                            settings.serverURL = value
+                        }
+                    }
+                }
+
+                HStack {
+                    SecureField("Auth Token", text: $settings.authToken)
+                        .autocapitalization(.none)
+
+                    Button("Paste") {
+                        if let value = UIPasteboard.general.string, !value.isEmpty {
+                            settings.authToken = value
+                        }
+                    }
+                }
 
                 Button("Save Configuration") {
                     settings.save()
@@ -88,6 +105,14 @@ struct SettingsView: View {
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Hide") {
+                    hideKeyboard()
+                }
+            }
+        }
         .onAppear {
             // Load current values
             settings.serverURL = UserDefaults.standard.string(forKey: "serverURL") ?? ""

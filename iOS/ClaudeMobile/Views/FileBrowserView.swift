@@ -207,6 +207,13 @@ struct FileContentView: View {
                     isEditing.toggle()
                 }
             }
+
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Hide") {
+                    hideKeyboard()
+                }
+            }
         }
     }
 

@@ -84,6 +84,13 @@ struct ChatView: View {
                 }
                 .disabled(connectionManager.messages.isEmpty)
             }
+
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Hide") {
+                    hideKeyboard()
+                }
+            }
         }
         .onAppear {
             connectIfNeeded()

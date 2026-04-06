@@ -20,6 +20,7 @@ class ConnectionManager: ObservableObject {
     private let maxReconnectAttempts = 5
     private var reconnectAttempts = 0
     private let reconnectDelay: TimeInterval = 5.0
+    private var shouldAutoReconnect = false
 
     init() {
         setupNetworkMonitoring()
@@ -48,9 +49,9 @@ class ConnectionManager: ObservableObject {
 
         serverURL = url
         authToken = token
-
-        disconnect()
-        connectionStatus = .connecting
+        shouldAutoReconnect = true
+        reconnectTimer?.invalidate()
+        reconnectTimer = nil
 
         guard let wsUrl = URL(string: url) else {
             connectionStatus = .error("Invalid URL format")
@@ -58,6 +59,9 @@ class ConnectionManager: ObservableObject {
             showErrorAlert = true
             return
         }
+
+        cleanupConnection(appendSystemMessage: false)
+        connectionStatus = .connecting
 
         var request = URLRequest(url: wsUrl)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -67,41 +71,39 @@ class ConnectionManager: ObservableObject {
         webSocketTask?.resume()
 
         listenForMessages()
-        startPingTimer()
+        // Confirm the connection with a real WebSocket ping frame.
+        webSocketTask?.sendPing { [weak self] error in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.handleConnectionFailure(error.localizedDescription)
+                    return
+                }
+                self.isConnected = true
+                self.connectionStatus = .connected
+                self.reconnectAttempts = 0
+                self.startPingTimer()
 
-        isConnected = true
-        connectionStatus = .connected
-        reconnectAttempts = 0
-
-        // Add system message
-        let systemMessage = ChatMessage(
-            type: "system",
-            message: "Connected to Claude Code server",
-            timestamp: Date().iso8601
-        )
-        messages.append(systemMessage)
+                let systemMessage = ChatMessage(
+                    type: "system",
+                    message: "Connected to Claude Code server",
+                    timestamp: Date().iso8601
+                )
+                self.messages.append(systemMessage)
+            }
+        }
     }
 
     func disconnect() {
-        isConnected = false
+        shouldAutoReconnect = false
+        reconnectTimer?.invalidate()
+        reconnectTimer = nil
+        cleanupConnection(appendSystemMessage: true)
         connectionStatus = .disconnected
-
-        pingTimer?.invalidate()
-        pingTimer = nil
-
-        webSocketTask?.cancel(with: .goingAway, reason: nil)
-        webSocketTask = nil
-
-        // Add system message
-        let systemMessage = ChatMessage(
-            type: "system",
-            message: "Disconnected from server",
-            timestamp: Date().iso8601
-        )
-        messages.append(systemMessage)
     }
 
     func reconnect() {
+        guard shouldAutoReconnect else { return }
         guard reconnectAttempts < maxReconnectAttempts else {
             connectionStatus = .error("Max reconnection attempts reached")
             return
@@ -116,6 +118,7 @@ class ConnectionManager: ObservableObject {
     }
 
     private func scheduleReconnect() {
+        guard shouldAutoReconnect else { return }
         reconnectTimer?.invalidate()
         reconnectTimer = Timer.scheduledTimer(withTimeInterval: reconnectDelay, repeats: false) { _ in
             self.reconnect()
@@ -182,27 +185,23 @@ class ConnectionManager: ObservableObject {
 
             case .failure(let error):
                 DispatchQueue.main.async {
-                    self.errorMessage = "Connection error: \(error.localizedDescription)"
-                    self.showErrorAlert = true
-                    self.scheduleReconnect()
+                    self.handleConnectionFailure(error.localizedDescription)
                 }
             }
         }
     }
 
     private func handleIncomingMessage(_ text: String) {
-        do {
-            guard let data = text.data(using: .utf8) else { return }
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
+        guard let data = text.data(using: .utf8) else { return }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
 
-            // Try to parse as a response message
-            if let response = try? decoder.decode(ResponseMessage.self, from: data) {
-                DispatchQueue.main.async {
-                    self.processResponse(response)
-                }
+        // Try to parse as a response message
+        if let response = try? decoder.decode(ResponseMessage.self, from: data) {
+            DispatchQueue.main.async {
+                self.processResponse(response)
             }
-        } catch {
+        } else {
             print("Failed to parse message: \(text)")
         }
     }
@@ -234,8 +233,48 @@ class ConnectionManager: ObservableObject {
 
     private func sendPing() {
         guard isConnected else { return }
-        let pingMessage = WebSocketMessage(type: "ping")
-        send(message: pingMessage)
+        webSocketTask?.sendPing { [weak self] error in
+            guard let self = self else { return }
+            if let error = error {
+                DispatchQueue.main.async {
+                    self.handleConnectionFailure(error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    private func cleanupConnection(appendSystemMessage: Bool) {
+        let wasConnecting: Bool
+        switch connectionStatus {
+        case .connecting:
+            wasConnecting = true
+        default:
+            wasConnecting = false
+        }
+        let wasActive = isConnected || wasConnecting
+        isConnected = false
+
+        pingTimer?.invalidate()
+        pingTimer = nil
+
+        webSocketTask?.cancel(with: .goingAway, reason: nil)
+        webSocketTask = nil
+
+        if appendSystemMessage && wasActive {
+            let systemMessage = ChatMessage(
+                type: "system",
+                message: "Disconnected from server",
+                timestamp: Date().iso8601
+            )
+            messages.append(systemMessage)
+        }
+    }
+
+    private func handleConnectionFailure(_ reason: String) {
+        cleanupConnection(appendSystemMessage: true)
+        errorMessage = "Connection error: \(reason)"
+        showErrorAlert = true
+        scheduleReconnect()
     }
 
     deinit {

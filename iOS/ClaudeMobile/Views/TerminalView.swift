@@ -103,6 +103,13 @@ struct TerminalView: View {
                     )
                 }
             }
+
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Hide") {
+                    hideKeyboard()
+                }
+            }
         }
         .onAppear {
             isFocused = true
