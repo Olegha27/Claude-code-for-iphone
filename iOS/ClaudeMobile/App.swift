@@ -7,9 +7,43 @@ struct ClaudeMobileApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
                 .environmentObject(connectionManager)
                 .environmentObject(settings)
+        }
+    }
+}
+
+struct RootView: View {
+    var body: some View {
+        TabView {
+            NavigationStack {
+                ChatView()
+            }
+            .tabItem {
+                Label("Chat", systemImage: "message.fill")
+            }
+
+            NavigationStack {
+                FileBrowserView()
+            }
+            .tabItem {
+                Label("Files", systemImage: "folder.fill")
+            }
+
+            NavigationStack {
+                TerminalView()
+            }
+            .tabItem {
+                Label("Terminal", systemImage: "terminal.fill")
+            }
+
+            NavigationStack {
+                SettingsView()
+            }
+            .tabItem {
+                Label("Settings", systemImage: "gearshape.fill")
+            }
         }
     }
 }

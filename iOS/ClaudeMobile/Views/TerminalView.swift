@@ -34,7 +34,7 @@ struct TerminalView: View {
                     }
                     .padding()
                 }
-                .onChange(of: commandHistory.count) { _ in
+                .onChange(of: commandHistory.count) { _, _ in
                     scrollToBottom(proxy: proxy)
                 }
             }
@@ -54,6 +54,18 @@ struct TerminalView: View {
                         .focused($isFocused)
                         .font(.system(.body, design: .monospaced))
                         .lineLimit(1...3)
+
+                    // Hide keyboard button
+                    if isFocused {
+                        Button {
+                            isFocused = false
+                        } label: {
+                            Image(systemName: "keyboard.chevron.compact.down")
+                                .foregroundColor(.secondary)
+                                .font(.system(size: 20))
+                        }
+                        .buttonStyle(.plain)
+                    }
 
                     // Send button
                     if !commandText.isEmpty {
@@ -187,14 +199,14 @@ struct CommandOutputView: View {
                 Text("$")
                     .foregroundColor(.green)
                     .padding(.leading, 4)
-                Text(output.command ?? "")
+                Text(output.command)
                     .foregroundColor(.primary)
                     .padding(.leading, 8)
             }
             .font(.system(.caption, design: .monospaced))
 
             // Output
-            if !output.output.isEmpty || (output.command != nil && output.exitCode != nil) {
+            if !output.output.isEmpty {
                 HStack {
                     Text(output.output)
                         .font(.system(.body, design: .monospaced))
@@ -218,11 +230,11 @@ struct CommandOutputView: View {
             }
 
             // Timestamp and exit code
-            if let exitCode = output.exitCode, exitCode != -1 {
+            if output.exitCode != -1 {
                 HStack {
-                    Text(`Exit ( \( exitCode ) )`)
+                    Text("Exit (\(output.exitCode))")
                         .font(.caption2)
-                        .foregroundColor(exitCode == 0 ? .green : .red)
+                        .foregroundColor(output.exitCode == 0 ? .green : .red)
 
                     Spacer()
 
@@ -251,13 +263,14 @@ struct CommandOutputView: View {
 }
 
 struct CommandOutput: Identifiable, Codable {
-    let id = UUID()
+    let id: UUID
     let command: String
     let output: String
     let exitCode: Int
     let timestamp: String
 
-    init(command: String, output: String, exitCode: Int, timestamp: String) {
+    init(id: UUID = UUID(), command: String, output: String, exitCode: Int, timestamp: String) {
+        self.id = id
         self.command = command
         self.output = output
         self.exitCode = exitCode

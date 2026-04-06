@@ -13,8 +13,8 @@ struct ChatView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Connection status banner
-            if let connectionMessage = connectionView {
-                connectionMessage
+            if let connectionBanner {
+                connectionBanner
             }
 
             // Messages list
@@ -28,10 +28,10 @@ struct ChatView: View {
                     }
                     .padding()
                 }
-                .onChange(of: connectionManager.messages.count) { _ in
+                .onChange(of: connectionManager.messages.count) { _, _ in
                     scrollToBottom(proxy: proxy)
                 }
-                .onChange(of: connectionManager.messages.last?.timestamp) { _ in
+                .onChange(of: connectionManager.messages.last?.timestamp) { _, _ in
                     scrollToBottom(proxy: proxy)
                 }
             }
@@ -90,12 +90,13 @@ struct ChatView: View {
         }
     }
 
-    private var connectionView: some View {
+    private var connectionBanner: AnyView? {
         switch connectionManager.connectionStatus {
         case .connected:
-            return EmptyView().eraseToAnyView()
+            return nil
         case .connecting:
-            return AnyView(HStack {
+            return AnyView(
+                HStack {
                 ProgressView()
                     .scaleEffect(0.8)
                 Text("Connecting...")
@@ -103,9 +104,11 @@ struct ChatView: View {
             }
             .padding(8)
             .frame(maxWidth: .infinity)
-            .background(Color.blue.opacity(0.1)))
+            .background(Color.blue.opacity(0.1))
+            )
         case .disconnected:
-            return AnyView(HStack {
+            return AnyView(
+                HStack {
                 Image(systemName: "exclamationmark.triangle")
                     .foregroundColor(.orange)
                 Text("Not connected - tap to reconnect")
@@ -117,9 +120,11 @@ struct ChatView: View {
             .background(Color.orange.opacity(0.1))
             .onTapGesture {
                 connectIfNeeded()
-            })
+            }
+            )
         case .error(let message):
-            return AnyView(HStack {
+            return AnyView(
+                HStack {
                 Image(systemName: "xmark.circle")
                     .foregroundColor(.red)
                 Text("Error: \(message)")
@@ -128,7 +133,8 @@ struct ChatView: View {
             }
             .padding(8)
             .frame(maxWidth: .infinity)
-            .background(Color.red.opacity(0.1)))
+            .background(Color.red.opacity(0.1))
+            )
         }
     }
 
