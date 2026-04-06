@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1A0000012B12345678900001 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000012B12345678900002 /* App.swift */; };
-		1A0000012B12345678900003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000012B12345678900004 /* ContentView.swift */; };
 		1A0000012B12345678900005 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000012B12345678900006 /* ChatView.swift */; };
 		1A0000012B12345678900007 /* FileBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000012B12345678900008 /* FileBrowserView.swift */; };
 		1A0000012B12345678900009 /* TerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000012B1234567890000A /* TerminalView.swift */; };
@@ -18,15 +17,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1A0000012B12345678900011 /* ClaudeMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClaudeMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A0000012B12345678900002 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
-		1A0000012B12345678900004 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1A0000012B12345678900006 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		1A0000012B12345678900008 /* FileBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileBrowserView.swift; sourceTree = "<group>"; };
 		1A0000012B1234567890000A /* TerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalView.swift; sourceTree = "<group>"; };
 		1A0000012B1234567890000C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		1A0000012B1234567890000E /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		1A0000012B12345678900010 /* ConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionManager.swift; sourceTree = "<group>"; };
+		1A0000012B12345678900011 /* ClaudeMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClaudeMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A0000012B12345678900012 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -53,7 +51,6 @@
 			isa = PBXGroup;
 			children = (
 				1A0000012B12345678900002 /* App.swift */,
-				1A0000012B12345678900004 /* ContentView.swift */,
 				1A0000012B12345678900015C /* Views */,
 				1A0000012B12345678900015D /* Models */,
 				1A0000012B12345678900015E /* Services */,
@@ -62,18 +59,9 @@
 			path = ClaudeMobile;
 			sourceTree = "<group>";
 		};
-		1A0000012B12345678900016 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				1A0000012B12345678900011 /* ClaudeMobile.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		1A0000012B12345678900015C /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				1A0000012B12345678900004 /* ContentView.swift */,
 				1A0000012B12345678900006 /* ChatView.swift */,
 				1A0000012B12345678900008 /* FileBrowserView.swift */,
 				1A0000012B1234567890000A /* TerminalView.swift */,
@@ -96,6 +84,14 @@
 				1A0000012B12345678900010 /* ConnectionManager.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		1A0000012B12345678900016 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000012B12345678900011 /* ClaudeMobile.app */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -171,7 +167,6 @@
 				1A0000012B12345678900009 /* TerminalView.swift in Sources */,
 				1A0000012B12345678900007 /* FileBrowserView.swift in Sources */,
 				1A0000012B12345678900005 /* ChatView.swift in Sources */,
-				1A0000012B12345678900003 /* ContentView.swift in Sources */,
 				1A0000012B12345678900001 /* App.swift in Sources */,
 				1A0000012B1234567890000D /* Message.swift in Sources */,
 			);
@@ -307,6 +302,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DKJPF7SR9G;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ClaudeMobile/Info.plist;
@@ -336,6 +332,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DKJPF7SR9G;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ClaudeMobile/Info.plist;
@@ -368,7 +365,7 @@
 				1A0000012B1234567890001F /* Debug */,
 				1A0000012B12345678900020 /* Release */,
 			);
-			defaultConfigurationIsLocal = YES;
+			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		1A0000012B1234567890001C /* Build configuration list for PBXProject "ClaudeMobile" */ = {
@@ -377,7 +374,7 @@
 				1A0000012B1234567890001D /* Debug */,
 				1A0000012B1234567890001E /* Release */,
 			);
-			defaultConfigurationIsLocal = YES;
+			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
